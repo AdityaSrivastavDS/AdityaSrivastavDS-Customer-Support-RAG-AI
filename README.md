@@ -63,11 +63,53 @@ customer-support-rag-streamlit/
    └─ chroma/                 # Local Chroma persistence
 ```
 
-## Notes
-- Everything uses free models and runs locally. For CPU-only, prefer `flan-t5-small`; for better quality, pick `flan-t5-base` in the sidebar.
-- Replace the sample articles with your actual knowledge base (Markdown or plain text recommended).
-- Satisfaction feedback is stored in `satisfaction.db` next to `app.py` (SQLite).
-- Login with your huggingface token before running app.py
+## 🚀 How to Use
 
-## License
-MIT
+Once the project is launched (either locally or deployed), follow these steps:
+
+### 1️⃣ Select Your Knowledge Base
+- Click the **"(Re)Index KB"** button.
+  - The system will load and chunk your documents.
+  - It will then create **embeddings** and build a **vector database** for quick search.
+
+---
+
+### 2️⃣ Ask Questions
+- In the **"Customer Support Assistant"** section, type your query in the text box.
+- Click **"Ask"**.
+- The AI will:
+  1. **Analyze** your query (Sentiment + Emotion detection).
+  2. **Retrieve** the most relevant context from your KB.
+  3. **Generate** a personalized, empathetic answer.
+
+---
+
+### 3️⃣ View AI’s Response
+- The AI’s generated answer will appear in the **"🧠 AI Answer"** section.
+- Below it, you will find:
+  - **Sources** used for the answer.
+  - **Customer Understanding Metrics**:
+    - Sentiment (Positive, Neutral, Negative)
+    - Emotion (e.g., Anger, Joy, Sadness)
+    - Escalation Risk (if the conversation should be passed to a human agent).
+
+---
+
+### 4️⃣ Provide Feedback
+- At the bottom of each conversation, you can mark:
+  - ✅ **Resolved** — if the AI’s answer was helpful.
+  - ❌ **Not helpful** — if the answer needs improvement.
+- Feedback will be stored in the local **SQLite database** (`satisfaction.db`).
+
+---
+
+### 5️⃣ Conversation History
+- The latest **8 turns** of the conversation are shown.
+- Older history is stored in memory for the current session.
+
+---
+
+### 💡 Notes
+- **All models** used are free and downloaded from Hugging Face on first run.
+- You can switch between **generator models** (`t5-small` for speed or `t5-base` for better quality) from the sidebar.
+- No internet connection is required after models are downloaded (fully local processing).
