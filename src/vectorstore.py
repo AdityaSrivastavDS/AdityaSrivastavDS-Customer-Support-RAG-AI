@@ -1,3 +1,9 @@
+import sys
+import pysqlite3
+
+# Force pysqlite3 to replace sqlite3
+sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+
 import chromadb
 from chromadb.config import Settings
 
