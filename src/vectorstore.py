@@ -1,8 +1,5 @@
 import sys
-import pysqlite3  # Helps avoid sqlite3 version issues locally
-
-# Patch sqlite3 for chromadb
-sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+import sqlite3
 
 import chromadb
 from chromadb.config import Settings
