@@ -8,7 +8,7 @@ class RAGPipeline:
     def __init__(self, embed_model: str, generator_model: str, sentiment_model: str, emotion_model: str, top_k: int):
         self.embedder = Embedder(embed_model)
         # ✅ Initialize without chroma_dir (in-memory store)
-        self.store = VectorStore()
+        self.store = VectorStore(dim=self.embedder.dim)
         self.generator = EmpatheticGenerator(generator_model)
         self.se = SentimentEmotion(sentiment_model, emotion_model)
         self.top_k = top_k

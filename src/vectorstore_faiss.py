@@ -1,38 +1,33 @@
-import chromadb
-from chromadb.config import Settings
+import faiss
+import numpy as np
 
 class VectorStore:
-    def __init__(self, collection_name="support_kb"):
-        # In-memory client (bypasses sqlite issue on Streamlit Cloud)
-        self.client = chromadb.Client(Settings(anonymized_telemetry=False))
-        self.collection = self.client.get_or_create_collection(
-            name=collection_name,
-            metadata={"hnsw:space": "cosine"}
-        )
+    def __init__(self, dim: int = 384):  # default for sentence-transformers/all-MiniLM-L6-v2
+        self.dim = dim
+        self.index = faiss.IndexFlatIP(dim)  # inner product (cosine-like if normalized)
+        self.docs = []
 
     def add_docs(self, docs, embeddings):
-        ids = [f"doc_{i}" for i in range(len(docs))]
-        texts = [d["text"] for d in docs]
-        metadatas = [{"source": d["source"]} for d in docs]
+        # Convert to numpy float32
+        embs = np.array(embeddings, dtype=np.float32)
+        # Normalize for cosine similarity
+        faiss.normalize_L2(embs)
+        self.index.add(embs)
+        self.docs.extend(docs)
 
-        self.collection.add(
-            ids=ids,
-            embeddings=embeddings,
-            documents=texts,
-            metadatas=metadatas
-        )
+    def query(self, query_emb, top_k: int = 5):
+        q = np.array([query_emb], dtype=np.float32)
+        faiss.normalize_L2(q)
+        D, I = self.index.search(q, top_k)
 
-    def query(self, query_emb, top_k=4):
-        results = self.collection.query(
-            query_embeddings=[query_emb],
-            n_results=top_k
-        )
-        docs = []
-        for i in range(len(results["ids"][0])):
-            docs.append({
-                "id": results["ids"][0][i],
-                "text": results["documents"][0][i],
-                "source": results["metadatas"][0][i]["source"],
-                "score": results["distances"][0][i],
+        results = []
+        for idx, score in zip(I[0], D[0]):
+            if idx == -1:
+                continue
+            doc = self.docs[idx]
+            results.append({
+                "text": doc["text"],
+                "source": doc.get("source", "unknown"),
+                "score": float(score)
             })
-        return docs
+        return results
