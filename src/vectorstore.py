@@ -2,8 +2,8 @@ import chromadb
 from chromadb.config import Settings
 
 class VectorStore:
-    def __init__(self, chroma_dir=None, collection_name="support_kb"):
-        # Force in-memory DB (no sqlite dependency)
+    def __init__(self, collection_name="support_kb"):
+        # In-memory client (no SQLite, no persistence)
         self.client = chromadb.Client(Settings(anonymized_telemetry=False))
         self.collection = self.client.get_or_create_collection(
             name=collection_name,
