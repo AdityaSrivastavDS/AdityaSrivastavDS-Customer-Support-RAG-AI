@@ -59,12 +59,12 @@ with col1:
         corpus = build_corpus(folder, config.CHUNK_SIZE, config.CHUNK_OVERLAP)
         st.write(f"Found {len(corpus)} chunks. Creating embeddings and indexing...")
 
+        # ✅ Updated: removed chroma_dir argument
         st.session_state.pipeline = RAGPipeline(
             embed_model=config.EMBED_MODEL,
             generator_model=gen_model,
             sentiment_model=config.SENTIMENT_MODEL,
             emotion_model=config.EMOTION_MODEL,
-            chroma_dir=None,  # In-memory
             top_k=top_k
         )
         st.session_state.pipeline.index(corpus)

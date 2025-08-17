@@ -1,13 +1,14 @@
 from typing import List, Dict
 from .embedder import Embedder
-from .vectorstore import VectorStore
+from .vectorstore_faiss import VectorStore   # This will be the modified version (no sqlite)
 from .generator import EmpatheticGenerator
 from .sentiment import SentimentEmotion
 
 class RAGPipeline:
-    def __init__(self, embed_model: str, generator_model: str, sentiment_model: str, emotion_model: str, chroma_dir, top_k: int):
+    def __init__(self, embed_model: str, generator_model: str, sentiment_model: str, emotion_model: str, top_k: int):
         self.embedder = Embedder(embed_model)
-        self.store = VectorStore(chroma_dir)
+        # ✅ Initialize without chroma_dir (in-memory store)
+        self.store = VectorStore()
         self.generator = EmpatheticGenerator(generator_model)
         self.se = SentimentEmotion(sentiment_model, emotion_model)
         self.top_k = top_k
